@@ -10,6 +10,8 @@
 
 **Phase 4 Complete:** Theming system with built-in themes (default, dracula, nord, monokai) and custom style DSL.
 
+**Phase 5a Complete:** Mouse support with clickable buttons via `run!(mouse: true)`.
+
 ---
 
 ## Phase 2: Input Components (DONE)
@@ -214,9 +216,9 @@ lib/stream_weaver_charm/
 
 ## Phase 5: Advanced Features
 
-### 5a: Mouse Support
+### 5a: Mouse Support (DONE)
 
-Use `Bubblezone` for clickable regions.
+Clickable buttons with mouse support.
 
 ```ruby
 tui "Clickable" do

@@ -35,6 +35,11 @@ module StreamWeaverCharm
 
       # Set theme if provided
       Styles.current_theme = @theme if @theme
+
+      # Mouse/button support
+      @buttons = {} # id => { row:, col:, width:, callback: }
+      @pending_button_callbacks = {} # component.object_id => { id:, width:, callback: }
+      @next_button_id = 0
     end
 
     # Bubbletea lifecycle: initialization
@@ -87,9 +92,25 @@ module StreamWeaverCharm
         if (handler = @key_handlers[key])
           handler.call(@state)
         end
+
+      when Bubbletea::MouseMessage
+        # Handle mouse clicks on buttons
+        if msg.press? && msg.left?
+          handle_mouse_click(msg.x, msg.y)
+        end
       end
 
       [self, nil]
+    end
+
+    # Handle mouse click at coordinates
+    def handle_mouse_click(x, y)
+      @buttons.each do |_id, btn|
+        if y == btn[:row] && x >= btn[:col] && x < btn[:col] + btn[:width]
+          btn[:callback]&.call(@state)
+          return
+        end
+      end
     end
 
     # Check if any input is currently focused
@@ -104,6 +125,9 @@ module StreamWeaverCharm
       @components = []
       @key_handlers = {}
       @focus_manager.clear
+      @buttons = {}
+      @pending_button_callbacks = {}
+      @next_button_id = 0
 
       # Re-execute the DSL block (StreamWeaver's core insight)
       instance_eval(&@block)
@@ -116,21 +140,31 @@ module StreamWeaverCharm
         input.focused = @focus_manager.focused?(key)
       end
 
-      # Build the output string
-      render_output
+      # Build the output string and track button positions
+      render_output_with_buttons
     end
 
     # Run the TUI app
-    def run!
-      Bubbletea.run(self)
+    # @param mouse [Boolean] Enable mouse support (default: false)
+    def run!(mouse: false)
+      if mouse
+        Bubbletea.run(self, mouse_cell_motion: true)
+      else
+        Bubbletea.run(self)
+      end
     end
 
     # Run the TUI app in one-shot mode (agentic mode)
     # Returns the state hash when user submits, or nil if cancelled
+    # @param mouse [Boolean] Enable mouse support (default: false)
     # @return [Hash, nil] The state hash on submit, nil on cancel
-    def run_once!
+    def run_once!(mouse: false)
       @run_once_mode = true
-      Bubbletea.run(self)
+      if mouse
+        Bubbletea.run(self, mouse_cell_motion: true)
+      else
+        Bubbletea.run(self)
+      end
       @submitted ? @state.dup : nil
     end
 
@@ -353,6 +387,30 @@ module StreamWeaverCharm
     end
 
     # =========================================
+    # Interactive Components DSL
+    # =========================================
+
+    # Clickable button (requires mouse: true in run!)
+    # @param label [String] Button label text
+    # @param block [Proc] Callback when button is clicked
+    def button(label, &block)
+      btn_id = @next_button_id
+      @next_button_id += 1
+
+      btn = Components::Button.new(btn_id, label)
+      text_component = Components::Text.new(btn.render)
+
+      # Store callback to be registered during render
+      @pending_button_callbacks[text_component.object_id] = {
+        id: btn_id,
+        width: btn.width,
+        callback: block
+      }
+
+      @components << text_component
+    end
+
+    # =========================================
     # Layout Components DSL
     # =========================================
 
@@ -412,18 +470,41 @@ module StreamWeaverCharm
 
     # Render all components to a string
     def render_output
-      lines = []
+      render_output_with_buttons
+    end
+
+    # Render and track button positions for mouse support
+    def render_output_with_buttons
+      output_lines = []
 
       # Title
       if @title && !@title.empty?
-        lines << Styles.title(@title)
-        lines << ""
+        output_lines << Styles.title(@title)
+        output_lines << ""
       end
 
-      # Components
-      lines << @components.map(&:render).join("\n")
+      # Render components and track button positions
+      current_row = output_lines.length
+      @components.each do |component|
+        rendered = component.render
+        rendered_lines = rendered.split("\n")
 
-      lines.join("\n")
+        # Check if this component contains buttons
+        if component.is_a?(Components::Text) && @pending_button_callbacks[component.object_id]
+          btn_info = @pending_button_callbacks[component.object_id]
+          @buttons[btn_info[:id]] = {
+            row: current_row,
+            col: 0,  # Buttons start at column 0 for simplicity
+            width: btn_info[:width],
+            callback: btn_info[:callback]
+          }
+        end
+
+        output_lines.concat(rendered_lines)
+        current_row += rendered_lines.length
+      end
+
+      output_lines.join("\n")
     end
   end
 end

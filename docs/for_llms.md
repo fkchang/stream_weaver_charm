@@ -23,7 +23,8 @@ lib/stream_weaver_charm/
 │   ├── text_area.rb    # Multi-line text area
 │   ├── list.rb         # Scrollable, selectable list
 │   ├── table.rb        # Tabular data display
-│   └── select.rb       # Single-select (radio buttons)
+│   ├── select.rb       # Single-select (radio buttons)
+│   └── button.rb       # Clickable button (mouse support)
 ├── focus_manager.rb    # Tab cycling between inputs
 ├── styles.rb           # ANSI escape codes, theme-aware rendering
 └── themes/
@@ -41,6 +42,7 @@ lib/stream_weaver_charm/
 **Layout:** `vstack`, `hstack`, `box`, `alert`
 **Input:** `text_input`, `text_area`
 **Selection:** `list`, `table`, `select`
+**Interactive:** `button` (requires `run!(mouse: true)`)
 **Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
 **Styling:** `style` (define custom styles)
 **Execution:** `run!` (interactive), `run_once!` (agentic - returns state hash)
@@ -77,5 +79,6 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 - Phase 3: Selection components ✓
 - Phase 5b: Agentic mode (run_once!) ✓
 - Phase 4: Theming & Polish ✓
-- Phase 5a: Mouse Support - next
+- Phase 5a: Mouse Support ✓
+- Phase 5c/d: Spinner, Progress, Confirm - next
 - See docs/ROADMAP.md for full plan

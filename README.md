@@ -146,6 +146,22 @@ text "Hello, #{state[:name]}!" if state[:name]
 
 **Focus management:** Tab cycles between inputs, Shift+Tab goes backward. First input auto-focuses.
 
+### Buttons (Mouse Support)
+
+```ruby
+tui "App" do
+  button "Save" do |s|
+    s[:saved] = true
+  end
+
+  button "Cancel" do |s|
+    s[:cancelled] = true
+  end
+end.run!(mouse: true)  # Enable mouse support
+```
+
+Buttons render as `[Label]` and respond to mouse clicks.
+
 ### Selection Components
 
 ```ruby

@@ -25,7 +25,14 @@ lib/stream_weaver_charm/
 │   ├── table.rb        # Tabular data display
 │   └── select.rb       # Single-select (radio buttons)
 ├── focus_manager.rb    # Tab cycling between inputs
-└── styles.rb           # ANSI escape codes, box drawing
+├── styles.rb           # ANSI escape codes, theme-aware rendering
+└── themes/
+    ├── base.rb         # Theme structure and color conversion
+    ├── registry.rb     # Theme lookup by name
+    ├── default.rb      # Default ANSI colors
+    ├── dracula.rb      # Dracula dark theme
+    ├── nord.rb         # Nord arctic theme
+    └── monokai.rb      # Monokai warm theme
 ```
 
 ## DSL Methods
@@ -35,7 +42,9 @@ lib/stream_weaver_charm/
 **Input:** `text_input`, `text_area`
 **Selection:** `list`, `table`, `select`
 **Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
+**Styling:** `style` (define custom styles)
 **Execution:** `run!` (interactive), `run_once!` (agentic - returns state hash)
+**Theming:** Pass `theme: :dracula` (or :nord, :monokai, or custom hash) to `tui`
 
 ## Input Component Pattern
 
@@ -67,5 +76,6 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 - Phase 2: Input components ✓
 - Phase 3: Selection components ✓
 - Phase 5b: Agentic mode (run_once!) ✓
-- Phase 4: Theming & Polish - next
+- Phase 4: Theming & Polish ✓
+- Phase 5a: Mouse Support - next
 - See docs/ROADMAP.md for full plan

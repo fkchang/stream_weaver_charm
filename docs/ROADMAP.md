@@ -8,6 +8,8 @@
 
 **Phase 5b Complete:** Agentic mode (`run_once!`) for one-shot forms that return data.
 
+**Phase 4 Complete:** Theming system with built-in themes (default, dracula, nord, monokai) and custom style DSL.
+
 ---
 
 ## Phase 2: Input Components (DONE)
@@ -151,7 +153,7 @@ lib/stream_weaver_charm/
 
 ---
 
-## Phase 4: Theming & Polish
+## Phase 4: Theming & Polish (DONE)
 
 **Goal:** Add theme support and polish the visual appearance.
 

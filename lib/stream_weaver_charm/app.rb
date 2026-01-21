@@ -28,6 +28,13 @@ module StreamWeaverCharm
       @run_once_mode = false
       @submit_keys = []
       @submitted = false
+
+      # Theme support
+      @theme = options[:theme]
+      @custom_styles = {} # name => style hash
+
+      # Set theme if provided
+      Styles.current_theme = @theme if @theme
     end
 
     # Bubbletea lifecycle: initialization
@@ -158,12 +165,43 @@ module StreamWeaverCharm
     end
 
     # =========================================
+    # Style DSL
+    # =========================================
+
+    # Define a custom style for use in text components
+    # @param name [Symbol] Style name to reference
+    # @param fg [Symbol, String, Integer] Foreground color
+    # @param bg [Symbol, String, Integer] Background color
+    # @param bold [Boolean] Bold text
+    # @param dim [Boolean] Dimmed text
+    # @param italic [Boolean] Italic text
+    def style(name, fg: nil, bg: nil, bold: false, dim: false, italic: false)
+      @custom_styles[name] = { fg: fg, bg: bg, bold: bold, dim: dim, italic: italic }
+    end
+
+    # Get a custom style by name
+    def get_style(name)
+      @custom_styles[name]
+    end
+
+    # =========================================
     # Display Components DSL
     # =========================================
 
     # Plain text
+    # @param content [String] Text content
+    # @param style [Symbol, Hash, nil] Style name or style hash
     def text(content, style: nil)
-      @components << Components::Text.new(content, style: style)
+      # Resolve custom style names to style hashes
+      resolved_style = case style
+                       when Symbol
+                         @custom_styles[style] || style  # Try custom, fall back to built-in
+                       when Hash
+                         style
+                       else
+                         nil
+                       end
+      @components << Components::Text.new(content, style: resolved_style)
     end
 
     # Headers

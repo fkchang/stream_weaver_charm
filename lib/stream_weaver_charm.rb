@@ -5,6 +5,12 @@ require "bubbletea"
 # Using raw ANSI codes via Styles module instead
 
 require_relative "stream_weaver_charm/version"
+require_relative "stream_weaver_charm/themes/base"
+require_relative "stream_weaver_charm/themes/default"
+require_relative "stream_weaver_charm/themes/dracula"
+require_relative "stream_weaver_charm/themes/nord"
+require_relative "stream_weaver_charm/themes/monokai"
+require_relative "stream_weaver_charm/themes/registry"
 require_relative "stream_weaver_charm/styles"
 require_relative "stream_weaver_charm/components"
 require_relative "stream_weaver_charm/focus_manager"

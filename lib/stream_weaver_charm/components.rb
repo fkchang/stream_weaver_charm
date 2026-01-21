@@ -22,6 +22,9 @@ module StreamWeaverCharm
         return content.to_s unless style
 
         case style
+        when Hash
+          # Custom style hash
+          Styles.apply_style(content.to_s, style)
         when :dim then Styles.dim(content.to_s)
         when :help then Styles.help(content.to_s)
         when :success then Styles.success(content.to_s)

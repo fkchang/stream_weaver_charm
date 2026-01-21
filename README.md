@@ -259,6 +259,37 @@ StreamWeaverCharm wraps Charm's [Bubbletea](https://github.com/charmbracelet/bub
 
 The block re-executes on every `view()` call, just like StreamWeaver re-renders on every HTTP request.
 
+## Theming
+
+Apply built-in themes or create custom ones:
+
+```ruby
+# Built-in themes: :default, :dracula, :nord, :monokai
+tui "App", theme: :dracula do
+  header1 "Dracula styled!"
+end.run!
+
+# Custom theme
+tui "App", theme: {
+  title: { fg: "#FF6B6B", bold: true },
+  header1: { fg: "#74B9FF", bold: true }
+} do
+  # ...
+end.run!
+
+# Custom inline styles
+tui "App" do
+  style :highlight, fg: :cyan, bold: true
+  style :muted, fg: :gray, dim: true
+
+  text "Important!", style: :highlight
+  text "Less important", style: :muted
+
+  # Or inline hash
+  text "Custom", style: { fg: "#FF79C6", italic: true }
+end.run!
+```
+
 ## Style System
 
 StreamWeaverCharm uses ANSI escape codes for styling (not Lipgloss, due to Go runtime issues with the Ruby bindings). Built-in styles:

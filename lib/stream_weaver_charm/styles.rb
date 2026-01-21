@@ -2,7 +2,7 @@
 
 module StreamWeaverCharm
   # ANSI escape codes for terminal styling
-  # Using raw ANSI instead of Lipgloss due to Go runtime issues with multiple style creations
+  # Supports theming with named colors, hex colors, and 256-color codes
   module Styles
     module_function
 
@@ -11,62 +11,119 @@ module StreamWeaverCharm
     BOLD = "\e[1m"
     DIM = "\e[2m"
     ITALIC = "\e[3m"
+    REVERSE = "\e[7m"
 
-    # Colors (256-color mode)
+    # Named color to 256-color mapping
+    NAMED_COLORS = {
+      red: 203,
+      yellow: 221,
+      blue: 111,
+      purple: 141,
+      gray: 245,
+      green: 84,
+      orange: 214,
+      cyan: 81,
+      pink: 205,
+      white: 255
+    }.freeze
+
+    # Current theme (thread-local for safety)
+    def current_theme
+      Thread.current[:stream_weaver_theme] ||= Themes::Default.new
+    end
+
+    def current_theme=(theme)
+      Thread.current[:stream_weaver_theme] = Themes::Registry.get(theme)
+    end
+
+    # Foreground color - accepts :name, "#hex", or 256-code
     def fg(color)
+      code = color_to_code(color)
+      code ? "\e[38;5;#{code}m" : ""
+    end
+
+    # Background color
+    def bg(color)
+      code = color_to_code(color)
+      code ? "\e[48;5;#{code}m" : ""
+    end
+
+    # Convert color to 256-color code
+    def color_to_code(color)
       case color
-      when :red then "\e[38;5;203m"
-      when :yellow then "\e[38;5;221m"
-      when :blue then "\e[38;5;111m"
-      when :purple then "\e[38;5;141m"
-      when :gray then "\e[38;5;245m"
-      when :green then "\e[38;5;84m"
-      when :orange then "\e[38;5;214m"
-      else ""
+      when Symbol
+        NAMED_COLORS[color]
+      when String
+        color.start_with?("#") ? Themes::Base.hex_to_256(color) : nil
+      when Integer
+        color
+      else
+        nil
       end
     end
 
-    # Apply style and render
+    # Apply style hash to text
+    # @param text [String] Text to style
+    # @param style [Hash] Style options: fg, bg, bold, dim, italic, reverse
+    def apply_style(text, style)
+      return text.to_s if style.nil? || style.empty?
+
+      codes = []
+      codes << fg(style[:fg]) if style[:fg]
+      codes << bg(style[:bg]) if style[:bg]
+      codes << BOLD if style[:bold]
+      codes << DIM if style[:dim]
+      codes << ITALIC if style[:italic]
+      codes << REVERSE if style[:reverse]
+
+      if codes.empty?
+        text.to_s
+      else
+        "#{codes.join}#{text}#{RESET}"
+      end
+    end
+
+    # Apply style and render (backward compatible)
     def render(text, *styles)
       prefix = styles.join
       "#{prefix}#{text}#{RESET}"
     end
 
-    # Pre-defined style helpers
+    # Theme-aware style helpers
     def title(text)
-      render(text, BOLD, fg(:red))
+      apply_style(text, current_theme[:title])
     end
 
     def header1(text)
-      render(text, BOLD, fg(:yellow))
+      apply_style(text, current_theme[:header1])
     end
 
     def header2(text)
-      render(text, BOLD, fg(:blue))
+      apply_style(text, current_theme[:header2])
     end
 
     def header3(text)
-      render(text, BOLD, fg(:purple))
+      apply_style(text, current_theme[:header3])
     end
 
     def dim(text)
-      render(text, DIM, fg(:gray))
+      apply_style(text, current_theme[:dim])
     end
 
     def help(text)
-      render(text, ITALIC, fg(:gray))
+      apply_style(text, current_theme[:help])
     end
 
     def success(text)
-      render(text, fg(:green))
+      apply_style(text, current_theme[:success])
     end
 
     def warning(text)
-      render(text, fg(:orange))
+      apply_style(text, current_theme[:warning])
     end
 
     def error(text)
-      render(text, fg(:red))
+      apply_style(text, current_theme[:error])
     end
 
     # Strip ANSI escape codes to get visible length
@@ -83,54 +140,47 @@ module StreamWeaverCharm
 
     # Simple box drawing
     def box(content, title: nil)
+      border_style = current_theme[:box_border]
+      border_fg = border_style[:fg] ? fg(border_style[:fg]) : fg(:blue)
+
       lines = content.to_s.split("\n")
       width = lines.map { |l| visible_length(l) }.max || 0
       width = [width, (title&.length || 0) + 4].max
-      width += 4  # padding
+      width += 4
 
       result = []
-      # Top border
       if title
-        # ╭─ title ───╮ needs to equal width + 4 total (matching content lines)
-        # ╭─ = 2, space = 1, title, space = 1, ╮ = 1 => dashes = width + 4 - 5 - title.length
         dashes_needed = width - title.length - 1
-        result << "#{fg(:blue)}╭─#{RESET} #{title} #{fg(:blue)}#{'─' * dashes_needed}╮#{RESET}"
+        result << "#{border_fg}╭─#{RESET} #{title} #{border_fg}#{'─' * dashes_needed}╮#{RESET}"
       else
-        result << "#{fg(:blue)}╭#{'─' * (width + 2)}╮#{RESET}"
+        result << "#{border_fg}╭#{'─' * (width + 2)}╮#{RESET}"
       end
 
-      # Content
       lines.each do |line|
         padded = visible_ljust(line, width)
-        result << "#{fg(:blue)}│#{RESET} #{padded} #{fg(:blue)}│#{RESET}"
+        result << "#{border_fg}│#{RESET} #{padded} #{border_fg}│#{RESET}"
       end
 
-      # Bottom border
-      result << "#{fg(:blue)}╰#{'─' * (width + 2)}╯#{RESET}"
-
+      result << "#{border_fg}╰#{'─' * (width + 2)}╯#{RESET}"
       result.join("\n")
     end
 
     # Alert box with variant
     def alert(content, variant: :info)
-      color = case variant
-      when :success then :green
-      when :warning then :orange
-      when :error then :red
-      else :blue
-      end
+      alert_key = :"alert_#{variant}"
+      style = current_theme[alert_key] || current_theme[:alert_info]
+      color_fg = style[:fg] ? fg(style[:fg]) : fg(:blue)
 
       lines = content.to_s.split("\n")
       width = lines.map { |l| visible_length(l) }.max || 0
       width += 4
 
       result = []
-      result << "#{fg(color)}┌#{'─' * (width + 2)}┐#{RESET}"
+      result << "#{color_fg}┌#{'─' * (width + 2)}┐#{RESET}"
       lines.each do |line|
-        result << "#{fg(color)}│#{RESET} #{visible_ljust(line, width)} #{fg(color)}│#{RESET}"
+        result << "#{color_fg}│#{RESET} #{visible_ljust(line, width)} #{color_fg}│#{RESET}"
       end
-      result << "#{fg(color)}└#{'─' * (width + 2)}┘#{RESET}"
-
+      result << "#{color_fg}└#{'─' * (width + 2)}┘#{RESET}"
       result.join("\n")
     end
 

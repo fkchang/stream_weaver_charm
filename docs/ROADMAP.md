@@ -4,6 +4,8 @@
 
 **Phase 2 Complete:** Input components (text_input, text_area), focus management with Tab/Shift+Tab cycling, state sync.
 
+**Phase 3 Complete:** Selection components (list, table, select) with keyboard navigation and scrolling.
+
 ---
 
 ## Phase 2: Input Components (DONE)
@@ -81,7 +83,7 @@ lib/stream_weaver_charm/
 
 ---
 
-## Phase 3: Selection Components
+## Phase 3: Selection Components (DONE)
 
 **Goal:** Add list and table components for data display and selection.
 

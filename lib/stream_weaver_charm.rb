@@ -10,6 +10,9 @@ require_relative "stream_weaver_charm/components"
 require_relative "stream_weaver_charm/focus_manager"
 require_relative "stream_weaver_charm/components/text_input"
 require_relative "stream_weaver_charm/components/text_area"
+require_relative "stream_weaver_charm/components/list"
+require_relative "stream_weaver_charm/components/table"
+require_relative "stream_weaver_charm/components/select"
 require_relative "stream_weaver_charm/app"
 
 # StreamWeaverCharm - Declarative Ruby DSL for building TUI applications

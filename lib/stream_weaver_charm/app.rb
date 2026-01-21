@@ -223,6 +223,72 @@ module StreamWeaverCharm
     end
 
     # =========================================
+    # Selection Components DSL
+    # =========================================
+
+    # Scrollable, selectable list
+    # @param key [Symbol] State key to store selected value
+    # @param items [Array] List items to display
+    # @param label [String, nil] Optional label above list
+    # @param height [Integer] Visible rows (scrolls if more items)
+    def list(key, items, label: nil, height: 5)
+      list_component = @input_components[key] ||= Components::List.new(
+        key,
+        height: height
+      )
+      list_component.items = items
+
+      # Register with focus manager
+      @focus_manager.register(key)
+
+      # Sync selected value to state
+      @state[key] = list_component.selected if list_component.selected
+
+      # Build display
+      @components << Components::Text.new("#{label}:") if label
+      @components << Components::Text.new(list_component.render)
+    end
+
+    # Table display (non-interactive)
+    # @param data [Array<Hash>, nil] Array of hashes (keys become headers)
+    # @param headers [Array, nil] Column headers
+    # @param rows [Array<Array>, nil] Row data
+    # @param border [Boolean] Show borders (default: true)
+    # @param striped [Boolean] Alternate row shading (default: false)
+    def table(data = nil, headers: nil, rows: nil, border: true, striped: false)
+      table_component = Components::Table.new(
+        data,
+        headers: headers,
+        rows: rows,
+        border: border,
+        striped: striped
+      )
+      @components << Components::Text.new(table_component.render)
+    end
+
+    # Single-select (radio-button style)
+    # @param key [Symbol] State key to store selected value
+    # @param options [Array] Options to choose from
+    # @param label [String, nil] Optional label above select
+    def select(key, options, label: nil)
+      select_component = @input_components[key] ||= Components::Select.new(
+        key,
+        options: options
+      )
+      select_component.options = options
+
+      # Register with focus manager
+      @focus_manager.register(key)
+
+      # Sync selected value to state
+      @state[key] = select_component.selected if select_component.selected
+
+      # Build display
+      @components << Components::Text.new("#{label}:") if label
+      @components << Components::Text.new(select_component.render)
+    end
+
+    # =========================================
     # Layout Components DSL
     # =========================================
 

@@ -146,6 +146,28 @@ text "Hello, #{state[:name]}!" if state[:name]
 
 **Focus management:** Tab cycles between inputs, Shift+Tab goes backward. First input auto-focuses.
 
+### Selection Components
+
+```ruby
+# Scrollable list with j/k navigation
+list :selected_file, ["app.rb", "Gemfile", "README.md"], height: 5
+
+# Single-select (radio buttons)
+select :priority, ["Low", "Medium", "High"]
+
+# Table from array of hashes
+table [
+  { name: "Alice", role: "Admin" },
+  { name: "Bob", role: "User" }
+], striped: true
+
+# Or with explicit headers/rows
+table headers: ["Name", "Size"], rows: [
+  ["app.rb", "4kb"],
+  ["Gemfile", "1kb"]
+]
+```
+
 ### Help Text
 
 ```ruby

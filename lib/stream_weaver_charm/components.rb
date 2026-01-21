@@ -75,6 +75,7 @@ module StreamWeaverCharm
     end
 
     # Horizontal stack - joins children horizontally
+    # Handles multi-line content by rendering columns side-by-side
     class HStack < Component
       attr_accessor :children
 
@@ -84,8 +85,34 @@ module StreamWeaverCharm
       end
 
       def render
-        separator = " " * options[:spacing]
-        children.map(&:render).join(separator)
+        return "" if children.empty?
+
+        spacing = options[:spacing]
+
+        # Split each child's render into lines
+        columns = children.map { |c| c.render.split("\n") }
+
+        # Find max height
+        max_height = columns.map(&:length).max || 0
+        return "" if max_height.zero?
+
+        # Calculate visible width of each column (stripping ANSI codes)
+        col_widths = columns.map do |lines|
+          lines.map { |l| Styles.visible_length(l) }.max || 0
+        end
+
+        # Build output line by line
+        (0...max_height).map do |row|
+          columns.each_with_index.map do |lines, col_idx|
+            line = lines[row] || ""
+            # Pad to column width for alignment (except last column)
+            if col_idx < columns.length - 1
+              Styles.visible_ljust(line, col_widths[col_idx])
+            else
+              line
+            end
+          end.join(" " * spacing)
+        end.join("\n")
       end
     end
 

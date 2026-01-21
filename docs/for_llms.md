@@ -20,7 +20,10 @@ lib/stream_weaver_charm/
 ├── components.rb       # Display components (Text, Header, Box, etc.)
 ├── components/
 │   ├── text_input.rb   # Single-line text input
-│   └── text_area.rb    # Multi-line text area
+│   ├── text_area.rb    # Multi-line text area
+│   ├── list.rb         # Scrollable, selectable list
+│   ├── table.rb        # Tabular data display
+│   └── select.rb       # Single-select (radio buttons)
 ├── focus_manager.rb    # Tab cycling between inputs
 └── styles.rb           # ANSI escape codes, box drawing
 ```
@@ -30,6 +33,7 @@ lib/stream_weaver_charm/
 **Display:** `text`, `header1/2/3`, `divider`, `help_text`
 **Layout:** `vstack`, `hstack`, `box`, `alert`
 **Input:** `text_input`, `text_area`
+**Selection:** `list`, `table`, `select`
 **Behavior:** `on_key`, `quit_on`, `focus`
 
 ## Input Component Pattern
@@ -60,5 +64,6 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 
 - Phase 1: Core components ✓
 - Phase 2: Input components ✓
-- Phase 3: Selection components (list, table, select) - next
+- Phase 3: Selection components ✓
+- Phase 4: Theming & Polish - next
 - See docs/ROADMAP.md for full plan

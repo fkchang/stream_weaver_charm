@@ -10,7 +10,16 @@
       "Bash(gem contents:*)",
       "Bash(gem info:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(gh auth status)",
+      "Bash(gh repo view:*)",
+      "Bash(gh auth:*)",
+      "Bash(GIT_TERMINAL_PROMPT=0 gh auth token:*)",
+      "Bash(git -c credential.helper='!f\\(\\) { echo \"\"password=$\\(cat\\)\"\"; }; f' push -u origin main)"
     ]
   }
 }

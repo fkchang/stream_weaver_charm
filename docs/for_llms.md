@@ -34,7 +34,8 @@ lib/stream_weaver_charm/
 **Layout:** `vstack`, `hstack`, `box`, `alert`
 **Input:** `text_input`, `text_area`
 **Selection:** `list`, `table`, `select`
-**Behavior:** `on_key`, `quit_on`, `focus`
+**Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
+**Execution:** `run!` (interactive), `run_once!` (agentic - returns state hash)
 
 ## Input Component Pattern
 
@@ -65,5 +66,6 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 - Phase 1: Core components ✓
 - Phase 2: Input components ✓
 - Phase 3: Selection components ✓
+- Phase 5b: Agentic mode (run_once!) ✓
 - Phase 4: Theming & Polish - next
 - See docs/ROADMAP.md for full plan

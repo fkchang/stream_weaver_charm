@@ -23,6 +23,11 @@ module StreamWeaverCharm
       # Input component support
       @focus_manager = FocusManager.new
       @input_components = {} # key => TextInput instance
+
+      # Agentic mode (run_once!) support
+      @run_once_mode = false
+      @submit_keys = []
+      @submitted = false
     end
 
     # Bubbletea lifecycle: initialization
@@ -40,6 +45,12 @@ module StreamWeaverCharm
         if key == "ctrl+c"
           return [self, Bubbletea.quit]
         elsif @quit_keys.include?(key) && !input_focused?
+          return [self, Bubbletea.quit]
+        end
+
+        # Handle submit keys (for run_once! mode)
+        if @run_once_mode && @submit_keys.include?(key)
+          @submitted = true
           return [self, Bubbletea.quit]
         end
 
@@ -107,6 +118,15 @@ module StreamWeaverCharm
       Bubbletea.run(self)
     end
 
+    # Run the TUI app in one-shot mode (agentic mode)
+    # Returns the state hash when user submits, or nil if cancelled
+    # @return [Hash, nil] The state hash on submit, nil on cancel
+    def run_once!
+      @run_once_mode = true
+      Bubbletea.run(self)
+      @submitted ? @state.dup : nil
+    end
+
     # =========================================
     # State Access
     # =========================================
@@ -129,6 +149,12 @@ module StreamWeaverCharm
     # Set custom quit keys (default: q, ctrl+c)
     def quit_on(*keys)
       @quit_keys = keys.map { |k| k.to_s.downcase }
+    end
+
+    # Set submit keys for run_once! mode
+    # @param keys [Array<String>] Keys that trigger form submission (e.g., "ctrl+s", "enter")
+    def submit_on(*keys)
+      @submit_keys = keys.map { |k| k.to_s.downcase }
     end
 
     # =========================================

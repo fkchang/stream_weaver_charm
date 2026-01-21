@@ -6,6 +6,8 @@
 
 **Phase 3 Complete:** Selection components (list, table, select) with keyboard navigation and scrolling.
 
+**Phase 5b Complete:** Agentic mode (`run_once!`) for one-shot forms that return data.
+
 ---
 
 ## Phase 2: Input Components (DONE)
@@ -228,7 +230,7 @@ end
 - Handle `Bubbletea::MouseMessage` in update()
 - Map mouse clicks to button callbacks
 
-### 5b: Agentic Mode (`run_once!`)
+### 5b: Agentic Mode (`run_once!`) (DONE)
 
 One-shot form that returns data and exits:
 

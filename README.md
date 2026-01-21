@@ -174,6 +174,28 @@ table headers: ["Name", "Size"], rows: [
 help_text "j/k: move | space: toggle | q: quit"
 ```
 
+## Agentic Mode (`run_once!`)
+
+One-shot forms that return data to the caller - perfect for CLI tools and agent integrations:
+
+```ruby
+result = tui "Quick Input" do
+  text_input :name, placeholder: "Your name"
+  text_input :email, placeholder: "Email"
+
+  submit_on "ctrl+s"  # Keys that submit the form
+end.run_once!
+
+if result
+  puts "Name: #{result[:name]}, Email: #{result[:email]}"
+else
+  puts "Cancelled"
+end
+```
+
+- `run_once!` returns the state hash on submit, `nil` on cancel (Ctrl+C)
+- `submit_on` defines which keys trigger form submission
+
 ## State
 
 State is a hash. Access with `state[:key]`:

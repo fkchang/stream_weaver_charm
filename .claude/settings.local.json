@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gem search:*)",
+      "Bash(gem spec:*)",
+      "Bash(cat:*)",
+      "Bash(bundle exec ruby:*)",
+      "Bash(ruby -rbubbletea -e \"puts Bubbletea.constants\":*)",
+      "Bash(ruby:*)",
+      "Bash(gem contents:*)",
+      "Bash(gem info:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

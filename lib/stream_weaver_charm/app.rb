@@ -94,8 +94,9 @@ module StreamWeaverCharm
         end
 
       when Bubbletea::MouseMessage
-        # Handle mouse clicks on buttons
-        if msg.press? && msg.left?
+        # Handle mouse clicks on buttons (trigger on release for better UX)
+        # Note: SGR protocol uses button=0 for left click (bubbletea's BUTTON_LEFT constant is wrong)
+        if msg.release? && msg.button == 0
           handle_mouse_click(msg.x, msg.y)
         end
       end
@@ -146,25 +147,34 @@ module StreamWeaverCharm
 
     # Run the TUI app
     # @param mouse [Boolean] Enable mouse support (default: false)
-    def run!(mouse: false)
-      if mouse
-        Bubbletea.run(self, mouse_cell_motion: true)
-      else
-        Bubbletea.run(self)
-      end
+    # @param alt_screen [Boolean] Use alternate screen buffer (default: true when mouse enabled)
+    def run!(mouse: false, alt_screen: nil)
+      # Auto-enable alt_screen when mouse is used (mouse coords are absolute to terminal)
+      alt_screen = mouse if alt_screen.nil?
+
+      options = {}
+      options[:mouse_cell_motion] = true if mouse
+      options[:alt_screen] = true if alt_screen
+
+      Bubbletea.run(self, **options)
     end
 
     # Run the TUI app in one-shot mode (agentic mode)
     # Returns the state hash when user submits, or nil if cancelled
     # @param mouse [Boolean] Enable mouse support (default: false)
+    # @param alt_screen [Boolean] Use alternate screen buffer (default: true when mouse enabled)
     # @return [Hash, nil] The state hash on submit, nil on cancel
-    def run_once!(mouse: false)
+    def run_once!(mouse: false, alt_screen: nil)
       @run_once_mode = true
-      if mouse
-        Bubbletea.run(self, mouse_cell_motion: true)
-      else
-        Bubbletea.run(self)
-      end
+
+      # Auto-enable alt_screen when mouse is used (mouse coords are absolute to terminal)
+      alt_screen = mouse if alt_screen.nil?
+
+      options = {}
+      options[:mouse_cell_motion] = true if mouse
+      options[:alt_screen] = true if alt_screen
+
+      Bubbletea.run(self, **options)
       @submitted ? @state.dup : nil
     end
 

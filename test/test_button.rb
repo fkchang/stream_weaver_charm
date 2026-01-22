@@ -71,11 +71,13 @@ class TestButton < Minitest::Test
     btn = buttons.values.first
 
     # Simulate mouse click at button position
+    # Note: SGR protocol uses button=0 for left click (not BUTTON_LEFT=1)
+    # and we trigger on release for better UX
     mouse_msg = Bubbletea::MouseMessage.new(
       x: btn[:col],
       y: btn[:row],
-      button: Bubbletea::MouseMessage::BUTTON_LEFT,
-      action: Bubbletea::MouseMessage::ACTION_PRESS
+      button: 0,  # SGR left click
+      action: Bubbletea::MouseMessage::ACTION_RELEASE
     )
 
     app.update(mouse_msg)

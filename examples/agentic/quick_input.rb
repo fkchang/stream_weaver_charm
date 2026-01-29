@@ -1,15 +1,19 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Quick Input Example - Demonstrates run_once! (agentic mode)
+# =============================================================================
+# QUICK INPUT - Agentic Mode (run_once!)
+# =============================================================================
+# Purpose: One-shot form that returns data to the calling script
+# Audience: CLI tools needing structured input, script integrations
 #
-# This shows how to use StreamWeaverCharm as a one-shot form
-# that returns data to the calling script - perfect for CLI tools
-# and agent integrations.
+# Key concept: run_once! blocks until submit, then returns state hash
 #
-# Run with: ruby examples/quick_input.rb
+# Run: ruby examples/quick_input.rb
+# Controls: Tab to switch fields, Ctrl+S to submit, Ctrl+C to cancel
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 # Create a one-shot form that returns data
 result = tui "Quick Input" do
@@ -29,7 +33,7 @@ result = tui "Quick Input" do
   submit_on "ctrl+s", "ctrl+enter"
 
   help_text "Tab: next | Ctrl+S: submit | Ctrl+C: cancel"
-end.run_once!
+end.run_once!(alt_screen: true)
 
 # result is nil if user cancelled (Ctrl+C), otherwise it's the state hash
 if result

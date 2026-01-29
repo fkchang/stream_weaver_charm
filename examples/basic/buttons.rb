@@ -1,13 +1,18 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Buttons Example - Demonstrates mouse support
+# =============================================================================
+# BUTTONS - Mouse Support with Layout
+# =============================================================================
+# Purpose: Shows buttons inside hstack layout (note: hstack button clicks
+#          have known issues with column positioning)
+# Audience: Users exploring button layouts
 #
-# Run with: ruby examples/buttons.rb
-#
-# Click buttons with your mouse!
+# Run: ruby examples/buttons.rb
+# Controls: Click buttons with mouse, Ctrl+C to quit
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 tui "Button Demo" do
   header1 "Button Demo"

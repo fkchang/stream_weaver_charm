@@ -1,16 +1,22 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Themed Example - Demonstrates theme support
+# =============================================================================
+# THEMED - Theme System Demo
+# =============================================================================
+# Purpose: Shows built-in themes (default, dracula, nord, monokai)
+# Audience: Users wanting to customize TUI appearance
 #
-# Run with: ruby examples/themed.rb
-#
-# Try different themes:
+# Run: ruby examples/themed.rb [theme_name]
+# Examples:
+#   ruby examples/themed.rb
 #   ruby examples/themed.rb dracula
 #   ruby examples/themed.rb nord
 #   ruby examples/themed.rb monokai
+# =============================================================================
+#   ruby examples/themed.rb monokai
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 # Get theme from command line arg, default to dracula
 theme_name = (ARGV[0] || "dracula").to_sym

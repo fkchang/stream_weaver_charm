@@ -1,11 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Form Example - Demonstrates text input components
+# =============================================================================
+# FORM - Text Input Components
+# =============================================================================
+# Purpose: Demonstrates text_input and text_area with focus management
+# Audience: Users building forms with text entry
 #
-# Run with: ruby examples/form.rb
+# Run: ruby examples/form.rb
+# Controls: Tab to switch fields, type to enter text, Ctrl+C to quit
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 tui "Contact Form" do
   header1 "Contact Form"

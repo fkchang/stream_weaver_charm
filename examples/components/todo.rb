@@ -1,12 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Todo list example demonstrating state management and lists
+# =============================================================================
+# TODO - Full Application Example
+# =============================================================================
+# Purpose: Complete todo app showing state management, lists, and keyboard UX
+# Audience: Users wanting to see a full TUI application pattern
 #
 # Run: ruby examples/todo.rb
 # Controls: j/k to navigate, space to toggle, a to add, d to delete, q to quit
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 tui "Todo List" do
   state[:todos] ||= [

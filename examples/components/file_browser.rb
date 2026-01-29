@@ -1,11 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# File Browser Example - Demonstrates selection components
+# =============================================================================
+# FILE BROWSER - List and Table Components
+# =============================================================================
+# Purpose: Demonstrates list selection and table display with scrolling
+# Audience: Users building file browsers, data viewers, or selection UIs
 #
-# Run with: ruby examples/file_browser.rb
+# Run: ruby examples/file_browser.rb
+# Controls: j/k or arrows to navigate, Enter to select, Ctrl+C to quit
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 # Sample file data
 FILES = [

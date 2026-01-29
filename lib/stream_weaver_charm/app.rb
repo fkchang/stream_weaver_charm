@@ -79,18 +79,28 @@ module StreamWeaverCharm
         end
 
         # Forward message to focused input component
+        input_handled = false
         if @focus_manager.focused_key
           input = @input_components[@focus_manager.focused_key]
           if input&.handle_key(msg)
             # Sync input value to state
             @state[@focus_manager.focused_key] = input.value
-            return [self, nil]
+            input_handled = true
+            # For Enter key, continue to on_key handlers (wizard/form flows need this)
+            # For other keys, return early
+            return [self, nil] unless msg.enter?
           end
         end
 
         # Execute registered handler if present
         if (handler = @key_handlers[key])
           handler.call(@state)
+        end
+
+        # Check for programmatic submit (state[:_submit] = true)
+        if @run_once_mode && @state[:_submit]
+          @submitted = true
+          return [self, Bubbletea.quit]
         end
 
       when Bubbletea::MouseMessage

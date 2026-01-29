@@ -1,12 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Simple counter example demonstrating StreamWeaverCharm basics
+# =============================================================================
+# COUNTER - Minimal "Hello World" Example
+# =============================================================================
+# Purpose: Simplest possible TUI - demonstrates keyboard input and state
+# Audience: New users learning StreamWeaverCharm basics
 #
 # Run: ruby examples/counter.rb
 # Controls: + to increment, - to decrement, q to quit
+# =============================================================================
 
-require_relative "../lib/stream_weaver_charm"
+require_relative "../../lib/stream_weaver_charm"
 
 tui "Counter" do
   state[:count] ||= 0

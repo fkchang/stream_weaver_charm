@@ -87,5 +87,6 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 - Phase 5b: Agentic mode (run_once!) ✓
 - Phase 4: Theming & Polish ✓
 - Phase 5a: Mouse Support ✓
-- Phase 5c/d: Spinner, Progress, Confirm - next
+- Phase 5c: Spinner, Progress ✓ (via `bubbles` gem, plus Markdown via `glamour`)
+- Phase 5d: Toggle, Confirm - next (no Charm-Ruby gem available, still hand-rolled)
 - See docs/ROADMAP.md for full plan

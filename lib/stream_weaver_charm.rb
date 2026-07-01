@@ -3,6 +3,8 @@
 require "bubbletea"
 # Note: lipgloss has Go runtime issues with multiple style creations
 # Using raw ANSI codes via Styles module instead
+require "bubbles"
+require "glamour"
 
 require_relative "stream_weaver_charm/version"
 require_relative "stream_weaver_charm/themes/base"
@@ -20,6 +22,7 @@ require_relative "stream_weaver_charm/components/list"
 require_relative "stream_weaver_charm/components/table"
 require_relative "stream_weaver_charm/components/select"
 require_relative "stream_weaver_charm/components/button"
+require_relative "stream_weaver_charm/components/markdown"
 require_relative "stream_weaver_charm/app"
 
 # StreamWeaverCharm - Declarative Ruby DSL for building TUI applications

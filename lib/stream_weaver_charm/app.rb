@@ -280,6 +280,12 @@ module StreamWeaverCharm
       @components << Components::Divider.new(width: width, char: char)
     end
 
+    # Render a markdown string via Glamour
+    # @param content [String] Markdown source
+    def markdown(content)
+      @components << Components::Markdown.new(content)
+    end
+
     # =========================================
     # Input Components DSL
     # =========================================

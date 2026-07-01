@@ -31,6 +31,24 @@ class TestSpinner < Minitest::Test
     refute_equal before, after
   end
 
+  def test_update_reissues_a_tick_command_to_keep_animation_alive
+    app = tui("Test") { spinner :loading }
+    app.view
+    spin = app.instance_variable_get(:@spinners)[:loading]
+    tick = Bubbles::Spinner::TickMessage.new(id: spin.id, tag: 0)
+    _model, command = app.update(tick)
+    refute_nil command
+  end
+
+  def test_ticking_one_spinner_does_not_advance_another
+    app = tui("Test") { spinner :a; spinner :b }
+    app.view
+    spin_a = app.instance_variable_get(:@spinners)[:a]
+    b_before = app.instance_variable_get(:@spinners)[:b].view
+    app.update(Bubbles::Spinner::TickMessage.new(id: spin_a.id, tag: 0))
+    assert_equal b_before, app.instance_variable_get(:@spinners)[:b].view
+  end
+
   def test_init_returns_a_tick_command_when_a_spinner_is_present
     app = tui("Test") { spinner :loading }
     _model, command = app.init

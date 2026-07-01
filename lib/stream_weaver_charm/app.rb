@@ -40,11 +40,21 @@ module StreamWeaverCharm
       @buttons = {} # id => { row:, col:, width:, callback: }
       @pending_button_callbacks = {} # component.object_id => { id:, width:, callback: }
       @next_button_id = 0
+
+      # Spinner/progress support (bubbles gem)
+      @spinners = {} # key => Bubbles::Spinner instance
     end
 
     # Bubbletea lifecycle: initialization
     def init
-      [self, nil]
+      # Runs the DSL block one extra time before Bubbletea's own first render,
+      # purely to discover any spinners so we can kick off their tick loop.
+      # Safe because the block is designed to re-execute idempotently every
+      # render — but a block with non-idempotent side effects (e.g. logging,
+      # incrementing an external counter) will observe that extra execution.
+      view
+      commands = @spinners.values.map(&:tick)
+      [self, commands.empty? ? nil : Bubbletea.batch(*commands)]
     end
 
     # Bubbletea lifecycle: handle messages (key presses, etc.)
@@ -109,6 +119,14 @@ module StreamWeaverCharm
         if msg.release? && msg.button == 0
           handle_mouse_click(msg.x, msg.y)
         end
+
+      when Bubbles::Spinner::TickMessage
+        commands = @spinners.filter_map do |key, spin|
+          updated, command = spin.update(msg)
+          @spinners[key] = updated
+          command
+        end
+        return [self, Bubbletea.batch(*commands)] unless commands.empty?
       end
 
       [self, nil]
@@ -434,6 +452,20 @@ module StreamWeaverCharm
       }
 
       @components << text_component
+    end
+
+    # =========================================
+    # Spinner / Progress DSL
+    # =========================================
+
+    # Animated loading spinner (requires bubbles gem)
+    # @param key [Symbol] Identifies this spinner instance across renders
+    # @param label [String, nil] Optional text shown after the spinner glyph
+    # @param style [Hash] Spinner animation style (default: Bubbles::Spinners::DOT)
+    def spinner(key, label: nil, style: Bubbles::Spinners::DOT)
+      spin = @spinners[key] ||= Bubbles::Spinner.new(spinner: style)
+      content = label ? "#{spin.view} #{label}" : spin.view
+      @components << Components::Text.new(content)
     end
 
     # =========================================

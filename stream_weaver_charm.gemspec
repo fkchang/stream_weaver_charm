@@ -21,7 +21,13 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "bubbletea", "~> 0.1"
-  # lipgloss has Go runtime issues with multiple style creations
-  # Using raw ANSI codes instead until that's fixed
-  # spec.add_dependency "lipgloss", "~> 0.2"
+  spec.add_dependency "bubbles", "~> 0.1"
+  spec.add_dependency "glamour", "~> 0.2"
+  # lipgloss >= 0.2.2 fixes a Go-runtime segfault under repeated Style creation
+  # (reproduced on 0.2.0, confirmed fixed on 0.2.2 — see docs/superpowers/specs/
+  # 2026-07-01-charm-gem-adoption-design.md). We never call lipgloss directly;
+  # this pin exists because `bubbles`' Progress component uses it internally
+  # and its own gemspec has no version floor, so resolution could otherwise
+  # land on the crashing 0.2.0.
+  spec.add_dependency "lipgloss", ">= 0.2.2"
 end

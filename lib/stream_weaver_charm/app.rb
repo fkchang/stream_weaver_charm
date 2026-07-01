@@ -476,6 +476,10 @@ module StreamWeaverCharm
     # @param width [Integer] Bar width in characters
     def progress(key, value:, max: 100, width: 40)
       bar = @progress_bars[key] ||= Bubbles::Progress.new(width: width)
+      # No outer .clamp here: view_as clamps out-of-range percentages internally;
+      # we only need to guard the max=0 case, which would otherwise divide 0.0/0.0
+      # into NaN (NaN.clamp raises ArgumentError, unlike Infinity.clamp which
+      # clamps silently to 1.0).
       percent = max.to_f.zero? ? 0.0 : value.to_f / max
       @components << Components::Text.new(bar.view_as(percent))
     end

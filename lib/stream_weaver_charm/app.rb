@@ -43,6 +43,7 @@ module StreamWeaverCharm
 
       # Spinner/progress support (bubbles gem)
       @spinners = {} # key => Bubbles::Spinner instance
+      @pending_spinner_ticks = [] # Bubbles::Spinner instances awaiting their first .tick
       @progress_bars = {} # key => Bubbles::Progress instance
     end
 
@@ -53,13 +54,37 @@ module StreamWeaverCharm
       # Safe because the block is designed to re-execute idempotently every
       # render — but a block with non-idempotent side effects (e.g. logging,
       # incrementing an external counter) will observe that extra execution.
+      # (update does the same extra-render trick for the same reason, on
+      # every non-tick message, not just once at startup — see its comment.)
       view
-      commands = @spinners.values.map(&:tick)
-      [self, commands.empty? ? nil : Bubbletea.batch(*commands)]
+      [self, drain_pending_spinner_ticks]
     end
 
     # Bubbletea lifecycle: handle messages (key presses, etc.)
     def update(msg)
+      model, command = process_message(msg)
+      return [model, command] if command.is_a?(Bubbletea::QuitCommand) || msg.is_a?(Bubbles::Spinner::TickMessage)
+
+      # A message may have mutated state such that the DSL block would now
+      # create a spinner that didn't exist before (e.g. `spinner(:x) if
+      # state[:busy]`). Bubbletea only lets init/update return commands,
+      # never view, so we re-run the block here (same idempotent-re-execution
+      # trick init uses) to discover any newly-created spinners and bootstrap
+      # their tick loop immediately, rather than leaving them frozen forever.
+      # Skipped for TickMessage since a tick never mutates state and can't
+      # reveal a new spinner — skipping avoids doubling work on every
+      # animation frame.
+      view
+      bootstrap_command = drain_pending_spinner_ticks
+      return [model, command] if bootstrap_command.nil?
+
+      [model, Bubbletea.batch(*[command, bootstrap_command].compact)]
+    end
+
+    # Handles the actual message-type dispatch. Split out from the public
+    # update so update can uniformly wrap every non-tick message with the
+    # newly-created-spinner bootstrap step (see update's comment).
+    def process_message(msg)
       case msg
       when Bubbletea::KeyMessage
         key = msg.to_s.downcase
@@ -464,7 +489,11 @@ module StreamWeaverCharm
     # @param label [String, nil] Optional text shown after the spinner glyph
     # @param style [Hash] Spinner animation style (default: Bubbles::Spinners::DOT)
     def spinner(key, label: nil, style: Bubbles::Spinners::DOT)
-      spin = @spinners[key] ||= Bubbles::Spinner.new(spinner: style)
+      unless @spinners.key?(key)
+        @spinners[key] = Bubbles::Spinner.new(spinner: style)
+        @pending_spinner_ticks << @spinners[key]
+      end
+      spin = @spinners[key]
       content = label ? "#{spin.view} #{label}" : spin.view
       @components << Components::Text.new(content)
     end
@@ -529,6 +558,17 @@ module StreamWeaverCharm
     end
 
     private
+
+    # Bundles up any spinners that were just created (via the `spinner` DSL
+    # method) but haven't had their first .tick issued yet, and clears the
+    # queue. Returns nil if there's nothing pending.
+    def drain_pending_spinner_ticks
+      return nil if @pending_spinner_ticks.empty?
+
+      commands = @pending_spinner_ticks.map(&:tick)
+      @pending_spinner_ticks = []
+      Bubbletea.batch(*commands)
+    end
 
     # Capture children into a container component
     def with_container(container, &block)

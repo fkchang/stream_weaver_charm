@@ -65,4 +65,37 @@ class TestSpinner < Minitest::Test
     app = tui("Test") { spinner :loading, label: "Loading..." }
     assert_includes app.view, "Loading..."
   end
+
+  def test_spinner_created_after_startup_gets_a_tick_command
+    app = tui("Test") do
+      state[:show] ||= false
+      spinner(:dynamic) if state[:show]
+      on_key("s") { |s| s[:show] = true }
+    end
+    _model, init_command = app.init
+    assert_nil init_command # no spinner exists yet at init time
+
+    key = Bubbletea::KeyMessage.new(key_type: Bubbletea::KeyMessage::KEY_RUNES, runes: "s".codepoints)
+    _model, update_command = app.update(key)
+    refute_nil update_command
+  end
+
+  def test_dynamically_created_spinner_advances_frame_on_tick
+    app = tui("Test") do
+      state[:show] ||= false
+      spinner(:dynamic) if state[:show]
+      on_key("s") { |s| s[:show] = true }
+    end
+    app.init
+    key = Bubbletea::KeyMessage.new(key_type: Bubbletea::KeyMessage::KEY_RUNES, runes: "s".codepoints)
+    app.update(key)
+
+    spin = app.instance_variable_get(:@spinners)[:dynamic]
+    before = spin.view
+    tick = Bubbles::Spinner::TickMessage.new(id: spin.id, tag: 0)
+    app.update(tick)
+    after = app.instance_variable_get(:@spinners)[:dynamic].view
+
+    refute_equal before, after
+  end
 end

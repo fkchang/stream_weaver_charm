@@ -43,6 +43,7 @@ module StreamWeaverCharm
 
       # Spinner/progress support (bubbles gem)
       @spinners = {} # key => Bubbles::Spinner instance
+      @progress_bars = {} # key => Bubbles::Progress instance
     end
 
     # Bubbletea lifecycle: initialization
@@ -466,6 +467,17 @@ module StreamWeaverCharm
       spin = @spinners[key] ||= Bubbles::Spinner.new(spinner: style)
       content = label ? "#{spin.view} #{label}" : spin.view
       @components << Components::Text.new(content)
+    end
+
+    # Progress bar (requires bubbles gem)
+    # @param key [Symbol] Identifies this progress bar instance across renders
+    # @param value [Numeric] Current value
+    # @param max [Numeric] Value representing 100%
+    # @param width [Integer] Bar width in characters
+    def progress(key, value:, max: 100, width: 40)
+      bar = @progress_bars[key] ||= Bubbles::Progress.new(width: width)
+      percent = max.to_f.zero? ? 0.0 : value.to_f / max
+      @components << Components::Text.new(bar.view_as(percent))
     end
 
     # =========================================

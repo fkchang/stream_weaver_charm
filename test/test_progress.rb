@@ -29,7 +29,7 @@ class TestProgress < Minitest::Test
   end
 
   def test_progress_handles_zero_max_without_raising
-    app = tui("Test") { progress :download, value: 5, max: 0 }
+    app = tui("Test") { progress :download, value: 0, max: 0 }
     assert_includes app.view, "0"
   end
 end

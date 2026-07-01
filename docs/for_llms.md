@@ -24,7 +24,8 @@ lib/stream_weaver_charm/
 │   ├── list.rb         # Scrollable, selectable list
 │   ├── table.rb        # Tabular data display
 │   ├── select.rb       # Single-select (radio buttons)
-│   └── button.rb       # Clickable button (mouse support)
+│   ├── button.rb       # Clickable button (mouse support)
+│   └── markdown.rb     # Glamour-rendered markdown
 ├── focus_manager.rb    # Tab cycling between inputs
 ├── styles.rb           # ANSI escape codes, theme-aware rendering
 └── themes/
@@ -43,7 +44,9 @@ lib/stream_weaver_charm/
 **Input:** `text_input`, `text_area`
 **Selection:** `list`, `table`, `select`
 **Interactive:** `button` (requires `run!(mouse: true)`)
-**Loading/Progress:** `spinner`, `progress` (via `bubbles` gem)
+**Loading/Progress:** `spinner`, `progress` (via `bubbles` gem; state lives
+directly in `App`'s `@spinners`/`@progress_bars` hashes, not a dedicated
+`components/spinner.rb` or `components/progress.rb` file)
 **Rich Text:** `markdown` (via `glamour` gem)
 **Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
 **Styling:** `style` (define custom styles)

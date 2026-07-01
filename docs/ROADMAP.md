@@ -288,12 +288,18 @@ end
 ```
 lib/stream_weaver_charm/
 ├── components/
-│   ├── button.rb          # NEW - clickable button
-│   ├── spinner.rb         # NEW
-│   └── progress.rb        # NEW
+│   └── button.rb          # NEW - clickable button
 ├── mouse_handler.rb       # NEW - Bubblezone integration
 └── app.rb                 # MODIFY - run_once!, mouse handling
 ```
+
+Spinner/progress state (`@spinners`/`@progress_bars`) lives directly in
+`app.rb`, using `Bubbles::Spinner`/`Bubbles::Progress` instances rendered
+through the existing `Components::Text` — no dedicated `spinner.rb`/
+`progress.rb` files were created. This differs slightly from `button`,
+which does have its own `components/button.rb` for rendering/hit-testing;
+button's click-tracking state (`@buttons`, `@pending_button_callbacks`)
+still lives in `app.rb`, the same place spinner/progress state lives.
 
 ---
 
@@ -306,9 +312,10 @@ lib/stream_weaver_charm/
 | Phase 5b (run_once!) | Low | High | **3rd** |
 | Phase 4 (Theming) | Medium | Medium | 4th |
 | Phase 5a (Mouse) | High | Medium | 5th |
-| Phase 5c/d (Spinner/Confirm) | Low | Low | 6th |
+| Phase 5c (Spinner/Progress) | Low | Low | Done (via bubbles gem) |
+| Phase 5d (Toggle/Confirm) | Low | Low | 6th |
 
-**Recommended order:** 2 → 3 → 5b → 4 → 5a → 5c/d
+**Recommended order:** 2 → 3 → 5b → 4 → 5a → 5c (done) → 5d
 
 ---
 

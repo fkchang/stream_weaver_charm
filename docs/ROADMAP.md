@@ -12,6 +12,8 @@
 
 **Phase 5a Complete:** Mouse support with clickable buttons via `run!(mouse: true)`.
 
+**Phase 5c Complete:** Spinner and progress bar via the `bubbles` gem (adopted instead of a from-scratch build — see `docs/superpowers/specs/2026-07-01-charm-gem-adoption-design.md`). Markdown rendering added via the `glamour` gem (not originally planned, adopted as a net-new capability from the same effort).
+
 ---
 
 ## Phase 2: Input Components (DONE)
@@ -254,16 +256,22 @@ puts result  # => { name: "Alice", email: "alice@example.com" }
 - On submit trigger, capture state and call `Bubbletea.quit`
 - Return the state hash to caller
 
-### 5c: Spinner / Progress
+### 5c: Spinner / Progress (DONE — via `bubbles` gem)
 
-Show loading states:
+Show loading states, using `Bubbles::Spinner` and `Bubbles::Progress` directly
+rather than a hand-rolled implementation:
 
 ```ruby
-spinner "Loading..."
+spinner :loading, label: "Loading..."
 
 progress :download, value: 45, max: 100
-# Renders: [████████░░░░░░░░] 45%
+# Renders: [████████░░░░░░░░]  45%
 ```
+
+Note the key-based signature (`spinner :loading, ...`) rather than the
+originally-sketched positional-string form — this matches every other
+stateful DSL method (`text_input`, `list`, `select`), since the underlying
+`Bubbles::Spinner` instance must persist across renders to animate.
 
 ### 5d: Confirm Dialog
 
@@ -323,15 +331,18 @@ lib/stream_weaver_charm/
 
 Current:
 - `bubbletea` ~> 0.1 (core TUI framework)
+- `bubbles` ~> 0.1 (Spinner, Progress — Phase 5c)
+- `glamour` ~> 0.2 (markdown rendering)
+- `lipgloss` >= 0.2.2 (transitive, via `bubbles`' Progress component — pinned
+  explicitly to avoid a segfault present in 0.2.0; see
+  `docs/superpowers/specs/2026-07-01-charm-gem-adoption-design.md`)
 
-Phase 2+ may need:
-- `bubbles` - Input components (if available as separate gem)
-- `bubblezone` - Mouse support (Phase 5a)
-
-Check gem availability:
-```bash
-gem search bubbles
-gem search bubblezone
-```
-
-If not available as separate gems, may need to implement input components directly using raw terminal escape sequences.
+Not yet adopted (each has its own migration cost — see the spec above):
+- `ntcharts` - charts (net-new capability, gem is early/v0.1.x)
+- `gum` - shell wrapper (superset of `examples/bash/swc.sh`)
+- `bubblezone` - generalized mouse zones (current button-only handling is
+  simpler and sufficient today)
+- `harmonica` - animation (nothing in stream_weaver_charm animates yet)
+- Toggle/Confirm components remain hand-rolled — no Charm-Ruby gem provides
+  them (`huh` isn't a real published gem and is architecturally a competing
+  full-screen form runner, not an embeddable component)

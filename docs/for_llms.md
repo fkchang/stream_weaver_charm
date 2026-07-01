@@ -43,6 +43,8 @@ lib/stream_weaver_charm/
 **Input:** `text_input`, `text_area`
 **Selection:** `list`, `table`, `select`
 **Interactive:** `button` (requires `run!(mouse: true)`)
+**Loading/Progress:** `spinner`, `progress` (via `bubbles` gem)
+**Rich Text:** `markdown` (via `glamour` gem)
 **Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
 **Styling:** `style` (define custom styles)
 **Execution:** `run!` (interactive), `run_once!` (agentic - returns state hash)
@@ -70,7 +72,12 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 ## Dependencies
 
 - `bubbletea` ~> 0.1 (Ruby bindings for Charm's Bubbletea)
-- Uses raw ANSI codes (not Lipgloss, due to Go runtime issues)
+- `bubbles` ~> 0.1 (Spinner, Progress)
+- `glamour` ~> 0.2 (markdown rendering)
+- `lipgloss` >= 0.2.2 (transitive dependency of `bubbles`' Progress; the
+  version floor matters — 0.2.0 segfaults under repeated Style creation)
+- Display/layout components still use raw ANSI codes (`Styles` module), not
+  Lipgloss directly
 
 ## Current Status
 

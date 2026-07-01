@@ -297,7 +297,12 @@ with:
 
 ```ruby
     def init
-      view # execute the DSL block once so any spinners get created
+      # Runs the DSL block one extra time before Bubbletea's own first render,
+      # purely to discover any spinners so we can kick off their tick loop.
+      # Safe because the block is designed to re-execute idempotently every
+      # render — but a block with non-idempotent side effects (e.g. logging,
+      # incrementing an external counter) will observe that extra execution.
+      view
       commands = @spinners.values.map(&:tick)
       [self, commands.empty? ? nil : Bubbletea.batch(*commands)]
     end

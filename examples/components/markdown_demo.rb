@@ -6,6 +6,7 @@
 # =============================================================================
 # Purpose: Demonstrates the markdown DSL method, powered by Charm's Glamour
 #          gem (github.com/marcoroth/glamour-ruby)
+# Audience: Users wanting to render formatted docs/help text inside a TUI
 # Run: ruby examples/components/markdown_demo.rb
 # Controls: [q] quit
 # =============================================================================

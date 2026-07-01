@@ -6,6 +6,7 @@
 # =============================================================================
 # Purpose: Demonstrates the spinner and progress DSL methods, powered by
 #          Charm's Bubbles gem (github.com/marcoroth/bubbles-ruby)
+# Audience: Users wanting long-running-task feedback (installers, downloads, builds)
 # Run: ruby examples/components/spinner_progress.rb
 # Controls: [space] advance download  [q] quit
 # =============================================================================

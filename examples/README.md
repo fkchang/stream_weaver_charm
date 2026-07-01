@@ -48,10 +48,14 @@ ruby examples/basic/counter.rb
 | `file_browser.rb` | List component for file selection |
 | `themed.rb` | Theme system (dracula, nord, monokai) |
 | `todo.rb` | Full todo app with multiple components |
+| `spinner_progress.rb` | Animated spinner + progress bar (bubbles gem) |
+| `markdown_demo.rb` | Markdown rendering via Glamour |
 
 ```bash
 ruby examples/components/form.rb
 ruby examples/components/themed.rb dracula
+ruby examples/components/spinner_progress.rb
+ruby examples/components/markdown_demo.rb
 ```
 
 ---

@@ -31,7 +31,7 @@ independent, low-risk, additive gems.
 
 **In scope:**
 - Add `bubbles` and `glamour` as gem dependencies (gemspec)
-- New DSL methods: `spinner`, `progress`, `markdown` (or `md`)
+- New DSL methods: `spinner`, `progress`, `markdown`
 - New component wrappers in `lib/stream_weaver_charm/components/`:
   `spinner.rb`, `progress.rb`, `markdown.rb`, following the existing
   `Components::*` pattern (see `button.rb`, `text_input.rb`)
@@ -59,11 +59,21 @@ independent, low-risk, additive gems.
 `markdown` is stateless — `Components::Markdown#render` calls
 `Glamour.render(content, style: theme_style, width: ...)` and returns the
 ANSI string, same shape as `Components::Text`. No new state-management
-needed.
+needed. Not every current theme (`:dracula`, `:nord`, `:monokai`) has a
+direct Glamour style-preset equivalent — map what matches and fall back to
+Glamour's `"auto"` style for the rest, rather than guessing a mapping.
 
-`spinner` and `progress` are stateful like `TextInput`: an instance persists
-in a per-key component hash (mirroring `@input_components`) so the spinner's
-current frame / progress's current percent survives across re-renders.
+`spinner` and `progress` are stateful like `TextInput`, but they are **not**
+keyboard-focusable and must not be registered with `@focus_manager` or stored
+in `@input_components` — that hash is specifically the Tab-cycled,
+focus-aware registry (every render pass does
+`@input_components.each { |k, i| i.focused = @focus_manager.focused?(k) }`,
+per `app.rb`). Follow the codebase's existing precedent for a
+non-focus-cycled stateful component instead: `button` uses its own dedicated
+`@buttons` hash (`app.rb`), not `@input_components`. Spinner and Progress
+should each get their own dedicated per-key hash (e.g. `@spinners`,
+`@progress_bars`) mirroring `@buttons`'s pattern.
+
 Spinner additionally needs the app's `update()` loop to schedule and handle a
 `TickCommand` to advance frames — this is new territory (no existing
 component ticks), so it needs its own small integration in `app.rb` rather

@@ -71,6 +71,7 @@ input = @input_components[key] ||= Components::TextInput.new(key, ...)
 2. **Focus persists across renders:** FocusManager.clear preserves focused_key, only clears registration list
 3. **Ctrl+C always quits:** Even when input is focused (other quit keys blocked during typing)
 4. **Input components live in @input_components hash:** Persist cursor position across re-renders
+5. **`update` re-runs `view` once per non-tick message:** to bootstrap tick commands for spinners created after startup (e.g. `spinner(:x) if state[:show]`). Skipped for `Bubbles::Spinner::TickMessage` (a tick can't create a new spinner). This doubles `view` cost per keystroke/click for all apps, not just ones with spinners — negligible for typical TUI blocks, worth knowing if profiling a slow one
 
 ## Dependencies
 

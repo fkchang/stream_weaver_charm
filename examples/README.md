@@ -50,11 +50,13 @@ ruby examples/basic/counter.rb
 | `todo.rb` | Full todo app with multiple components |
 | `spinner_progress.rb` | Animated spinner + progress bar (bubbles gem) |
 | `markdown_demo.rb` | Markdown rendering via Glamour |
+| `gh_dash_demo.rb` | Stubbed gh-dash-style dashboard - tabs, table, box, markdown, spinner, progress together |
 
 ```bash
 ruby examples/components/form.rb
 ruby examples/components/themed.rb dracula
 ruby examples/components/spinner_progress.rb
+ruby examples/components/gh_dash_demo.rb
 ruby examples/components/markdown_demo.rb
 ```
 

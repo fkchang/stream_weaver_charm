@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   # and its own gemspec has no version floor, so resolution could otherwise
   # land on the crashing 0.2.0.
   spec.add_dependency "lipgloss", ">= 0.2.2"
+
+  spec.add_development_dependency "minitest", "~> 5.0"
 end

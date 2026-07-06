@@ -15,11 +15,18 @@ class TestThemes < Minitest::Test
     assert_includes themes, :dracula
     assert_includes themes, :nord
     assert_includes themes, :monokai
+    assert_includes themes, :light
   end
 
   def test_registry_get_by_symbol
     theme = StreamWeaverCharm::Themes::Registry.get(:dracula)
     assert_equal :dracula, theme.name
+  end
+
+  def test_registry_get_light_theme
+    theme = StreamWeaverCharm::Themes::Registry.get(:light)
+    assert_equal :light, theme.name
+    assert_equal "#24292F", theme[:text][:fg]
   end
 
   def test_registry_get_custom_hash

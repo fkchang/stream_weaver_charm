@@ -4,7 +4,7 @@
 # =============================================================================
 # THEMED - Theme System Demo
 # =============================================================================
-# Purpose: Shows built-in themes (default, dracula, nord, monokai)
+# Purpose: Shows built-in themes (default, dracula, nord, monokai, light)
 # Audience: Users wanting to customize TUI appearance
 #
 # Run: ruby examples/themed.rb [theme_name]
@@ -13,8 +13,8 @@
 #   ruby examples/themed.rb dracula
 #   ruby examples/themed.rb nord
 #   ruby examples/themed.rb monokai
+#   ruby examples/themed.rb light
 # =============================================================================
-#   ruby examples/themed.rb monokai
 
 require_relative "../../lib/stream_weaver_charm"
 

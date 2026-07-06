@@ -51,7 +51,7 @@ directly in `App`'s `@spinners`/`@progress_bars` hashes, not a dedicated
 **Behavior:** `on_key`, `quit_on`, `focus`, `submit_on`
 **Styling:** `style` (define custom styles)
 **Execution:** `run!` (interactive), `run_once!` (agentic - returns state hash)
-**Theming:** Pass `theme: :dracula` (or :nord, :monokai, or custom hash) to `tui`
+**Theming:** Pass `theme: :dracula` (or :nord, :monokai, :light, or custom hash) to `tui`. Use `:light` for light-background terminals - the others assume a dark background.
 
 ## Input Component Pattern
 

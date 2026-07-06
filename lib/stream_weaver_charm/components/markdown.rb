@@ -7,7 +7,8 @@ module StreamWeaverCharm
       # Maps our theme names to Glamour's built-in style presets.
       # Themes with no direct Glamour equivalent fall back to "auto".
       GLAMOUR_STYLE_BY_THEME = {
-        dracula: "dracula"
+        dracula: "dracula",
+        light: "light"
       }.freeze
       DEFAULT_GLAMOUR_STYLE = "auto"
 

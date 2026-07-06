@@ -17,6 +17,14 @@ class TestMarkdown < Minitest::Test
     StreamWeaverCharm::Styles.current_theme = :default
   end
 
+  def test_light_theme_maps_to_light_glamour_style
+    StreamWeaverCharm::Styles.current_theme = :light
+    md = StreamWeaverCharm::Components::Markdown.new("# Hi")
+    assert_equal "light", md.send(:resolved_style)
+  ensure
+    StreamWeaverCharm::Styles.current_theme = :default
+  end
+
   def test_theme_without_glamour_preset_falls_back_to_auto
     StreamWeaverCharm::Styles.current_theme = :nord
     md = StreamWeaverCharm::Components::Markdown.new("# Hi")

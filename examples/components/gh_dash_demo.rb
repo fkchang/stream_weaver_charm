@@ -9,11 +9,15 @@
 #          set: tabs, table, box, markdown, spinner, progress, theming.
 # Audience: Anyone wanting to see most of the DSL's components working
 #           together in one screen, styled like a real showcased Charm app.
-# Run: ruby examples/components/gh_dash_demo.rb
+# Run: ruby examples/components/gh_dash_demo.rb [theme]
+#      (defaults to dracula; pass "light" if your terminal has a light
+#      background - dracula's pastel foregrounds have poor contrast there)
 # Controls: type [ or ] to switch section  j/k select row  q quit
 # =============================================================================
 
 require_relative "../../lib/stream_weaver_charm"
+
+theme_name = (ARGV[0] || "dracula").to_sym
 
 SECTIONS = [
   {
@@ -60,7 +64,7 @@ SECTIONS = [
   }
 ].freeze
 
-tui "gh-dash (stubbed demo)", theme: :dracula do
+tui "gh-dash (stubbed demo)", theme: theme_name do
   state[:tab] ||= 0
   state[:selected] ||= 0
 

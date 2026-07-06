@@ -8,7 +8,7 @@
 
 **Phase 5b Complete:** Agentic mode (`run_once!`) for one-shot forms that return data.
 
-**Phase 4 Complete:** Theming system with built-in themes (default, dracula, nord, monokai) and custom style DSL.
+**Phase 4 Complete:** Theming system with built-in themes (default, dracula, nord, monokai, light) and custom style DSL.
 
 **Phase 5a Complete:** Mouse support with clickable buttons via `run!(mouse: true)`.
 
@@ -199,7 +199,8 @@ end
 - `:dracula` - Popular dark theme
 - `:nord` - Cool blue-gray palette
 - `:monokai` - Warm syntax-highlighting colors
-- `:solarized_dark` / `:solarized_light`
+- `:light` - For light-background terminals (GitHub light-mode palette; also maps to Glamour's built-in "light" markdown style)
+- `:solarized_dark` / `:solarized_light` - not yet built
 
 ### Files to Create/Modify
 

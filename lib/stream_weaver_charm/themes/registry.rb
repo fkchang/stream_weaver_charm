@@ -8,7 +8,8 @@ module StreamWeaverCharm
         default: -> { Default.new },
         dracula: -> { Dracula.new },
         nord: -> { Nord.new },
-        monokai: -> { Monokai.new }
+        monokai: -> { Monokai.new },
+        light: -> { Light.new }
       }.freeze
 
       module_function

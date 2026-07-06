@@ -10,7 +10,7 @@
 # Audience: Anyone wanting to see most of the DSL's components working
 #           together in one screen, styled like a real showcased Charm app.
 # Run: ruby examples/components/gh_dash_demo.rb
-# Controls: [ ] switch section  j/k select row  q quit
+# Controls: type [ or ] to switch section  j/k select row  q quit
 # =============================================================================
 
 require_relative "../../lib/stream_weaver_charm"
@@ -100,7 +100,7 @@ tui "gh-dash (stubbed demo)", theme: :dracula do
   end
 
   text ""
-  help_text "[/] switch section  j/k select  q quit"
+  help_text "type [ or ] to switch section   j/k select   q quit"
 
   on_key "[" do |s|
     s[:tab] = (s[:tab] - 1) % SECTIONS.size

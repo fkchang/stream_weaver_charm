@@ -104,7 +104,7 @@ tui "gh-dash (stubbed demo)", theme: theme_name do
   end
 
   text ""
-  help_text "type [ or ] to switch section   j/k select   q quit"
+  help_text "type [ or ] to switch section   j/k or up/down select   q quit"
 
   on_key "[" do |s|
     s[:tab] = (s[:tab] - 1) % SECTIONS.size
@@ -116,12 +116,14 @@ tui "gh-dash (stubbed demo)", theme: theme_name do
     s[:selected] = 0
   end
 
-  on_key "j" do |s|
+  move_down = proc do |s|
     max = SECTIONS[s[:tab]][:rows].size - 1
     s[:selected] = [s[:selected] + 1, max].min
   end
+  move_up = proc { |s| s[:selected] = [s[:selected] - 1, 0].max }
 
-  on_key "k" do |s|
-    s[:selected] = [s[:selected] - 1, 0].max
-  end
+  on_key("j", &move_down)
+  on_key("down", &move_down)
+  on_key("k", &move_up)
+  on_key("up", &move_up)
 end.run!

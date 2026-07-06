@@ -12,7 +12,7 @@
 # Run: ruby examples/components/gh_dash_demo.rb [theme]
 #      (defaults to dracula; pass "light" if your terminal has a light
 #      background - dracula's pastel foregrounds have poor contrast there)
-# Controls: type [ or ] to switch section  j/k select row  q quit
+# Controls: left/right or [ ] switch section  j/k or up/down select row  q quit
 # =============================================================================
 
 require_relative "../../lib/stream_weaver_charm"
@@ -104,17 +104,21 @@ tui "gh-dash (stubbed demo)", theme: theme_name do
   end
 
   text ""
-  help_text "type [ or ] to switch section   j/k or up/down select   q quit"
+  help_text "left/right or [ ] switch section   j/k or up/down select   q quit"
 
-  on_key "[" do |s|
+  prev_tab = proc do |s|
     s[:tab] = (s[:tab] - 1) % SECTIONS.size
     s[:selected] = 0
   end
-
-  on_key "]" do |s|
+  next_tab = proc do |s|
     s[:tab] = (s[:tab] + 1) % SECTIONS.size
     s[:selected] = 0
   end
+
+  on_key("[", &prev_tab)
+  on_key("left", &prev_tab)
+  on_key("]", &next_tab)
+  on_key("right", &next_tab)
 
   move_down = proc do |s|
     max = SECTIONS[s[:tab]][:rows].size - 1
@@ -126,4 +130,4 @@ tui "gh-dash (stubbed demo)", theme: theme_name do
   on_key("down", &move_down)
   on_key("k", &move_up)
   on_key("up", &move_up)
-end.run!
+end.run!(alt_screen: true)

@@ -1,8 +1,10 @@
 # StreamWeaverCharm
 
-**Reactive TUI applications using StreamWeaver's declarative Ruby DSL, powered by Charm's Bubbletea.**
+**Write terminal UIs the way you'd write a web view - a Ruby block that re-executes on every interaction. No manual redraws, no state synchronization, no Elm Architecture boilerplate to hand-roll.**
 
-StreamWeaverCharm brings the same reactive model from [StreamWeaver](https://github.com/fkchang/stream_weaver) (web UIs) to terminal interfaces. Your Ruby block re-executes on every user interaction, creating reactive TUIs without manual event handling.
+StreamWeaverCharm brings [StreamWeaver](https://github.com/fkchang/stream_weaver)'s reactive model - already proven for web UIs - to the terminal, on top of Charm's [Bubbletea](https://github.com/charmbracelet/bubbletea) (Go's most popular TUI framework, via its official Ruby bindings). If you already know StreamWeaver, you already know StreamWeaverCharm - same mental model, different target.
+
+Under the hood it combines real, independently-published Charm-Ruby gems where they exist - [bubbletea](https://github.com/marcoroth/bubbletea-ruby) for the event loop, [bubbles](https://github.com/marcoroth/bubbles-ruby) for spinner/progress, [glamour](https://github.com/marcoroth/glamour-ruby) for markdown, [lipgloss](https://github.com/marcoroth/lipgloss-ruby) transitively - with a lightweight raw-ANSI styling layer for everything else.
 
 ## Installation
 
@@ -184,6 +186,30 @@ table headers: ["Name", "Size"], rows: [
 ]
 ```
 
+### Loading & Progress (via the `bubbles` gem)
+
+```ruby
+spinner :loading, label: "Fetching updates..."
+
+progress :download, value: 45, max: 100, width: 20
+# Renders: ████████░░░░░░░░  45%
+```
+
+`spinner` animates on its own (tick-driven, no polling required) - even if it's created conditionally partway through a run, not just present from the first render. `progress` is a static render of whatever `value`/`max` you pass, redrawn each time your block re-executes.
+
+### Rich Text (via the `glamour` gem)
+
+```ruby
+markdown <<~MD
+  # Release Notes
+
+  - Added **dark mode**
+  - Fixed the `flicker` bug
+MD
+```
+
+Renders real markdown - headings, emphasis, lists, code - as ANSI-styled terminal output, theme-aware (matches your `theme:` where Glamour has a preset, falls back to its `auto` style otherwise).
+
 ### Help Text
 
 ```ruby
@@ -265,6 +291,14 @@ tui "Todo" do
 end.run!
 ```
 
+### More Examples
+
+The [`examples/`](examples/) directory has 20+ runnable scripts, organized by topic (`basic/`, `components/`, `agentic/`, `bash/`) - see [`examples/README.md`](examples/README.md) for the full index. Worth starting with:
+
+- [`examples/components/gh_dash_demo.rb`](examples/components/gh_dash_demo.rb) - a stubbed dashboard styled after the real [gh-dash](https://github.com/dlvhdr/gh-dash) (itself built on bubbletea/lipgloss/glamour), exercising most of this library's components in one screen: tabs, a table, a detail panel with markdown, a spinner, and a progress bar. `ruby examples/components/gh_dash_demo.rb light` if your terminal has a light background.
+- [`examples/components/form.rb`](examples/components/form.rb) - text inputs with Tab-cycling focus
+- [`examples/agentic/quick_input.rb`](examples/agentic/quick_input.rb) - `run_once!` in practice
+
 ## Architecture
 
 StreamWeaverCharm wraps Charm's [Bubbletea](https://github.com/charmbracelet/bubbletea) (the Elm Architecture for TUIs):
@@ -280,7 +314,8 @@ The block re-executes on every `view()` call, just like StreamWeaver re-renders 
 Apply built-in themes or create custom ones:
 
 ```ruby
-# Built-in themes: :default, :dracula, :nord, :monokai
+# Built-in themes: :default, :dracula, :nord, :monokai, :light
+# (:light is for light-background terminals - the others assume dark)
 tui "App", theme: :dracula do
   header1 "Dracula styled!"
 end.run!
@@ -308,7 +343,7 @@ end.run!
 
 ## Style System
 
-StreamWeaverCharm uses ANSI escape codes for styling (not Lipgloss, due to Go runtime issues with the Ruby bindings). Built-in styles:
+Display and layout components (`text`, `header1/2/3`, `box`, `alert`, `table`) use raw ANSI escape codes directly, not Lipgloss - simpler for the common case, and it sidesteps a real Go-runtime segfault Lipgloss used to hit under repeated `Style` creation on some platforms (fixed upstream as of `lipgloss` 0.2.2, which `spinner`/`progress` now depend on transitively). Built-in styles:
 
 - `:dim` - Muted gray text
 - `:help` - Italic gray (for hints)
@@ -329,4 +364,4 @@ Same DSL. Different targets. One mental model.
 
 ## License
 
-MIT
+[MIT](LICENSE.txt)

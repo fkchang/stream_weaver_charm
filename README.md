@@ -6,6 +6,28 @@ StreamWeaverCharm brings [StreamWeaver](https://github.com/fkchang/stream_weaver
 
 Under the hood it combines real, independently-published Charm-Ruby gems where they exist - [bubbletea](https://github.com/marcoroth/bubbletea-ruby) for the event loop, [bubbles](https://github.com/marcoroth/bubbles-ruby) for spinner/progress, [glamour](https://github.com/marcoroth/glamour-ruby) for markdown, [lipgloss](https://github.com/marcoroth/lipgloss-ruby) transitively - with a lightweight raw-ANSI styling layer for everything else.
 
+![A stubbed gh-dash-style dashboard built with StreamWeaverCharm - tabs, a table, a markdown detail panel, a spinner, and a progress bar](docs/images/gh_dash_demo.png)
+
+The screen above is [`examples/components/gh_dash_demo.rb`](examples/components/gh_dash_demo.rb) - fake data, styled after the real [gh-dash](https://github.com/dlvhdr/gh-dash) (itself built on bubbletea/lipgloss/glamour) - in full:
+
+```ruby
+tui "gh-dash (stubbed demo)", theme: :dracula do
+  # ...tabs, fake PR/issue data...
+
+  table headers: ["", *section[:headers]], rows: table_rows
+
+  box title: "Details ##{row[:number]}" do
+    text row[:title]
+    markdown row[:body]
+  end
+
+  hstack(spacing: 4) do
+    spinner :sync, label: "Syncing with GitHub..."
+    progress :sync_progress, value: 42, max: 100, width: 20
+  end
+end.run!(alt_screen: true)
+```
+
 ## Installation
 
 ```ruby
